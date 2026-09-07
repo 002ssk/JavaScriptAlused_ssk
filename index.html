@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arva ära number</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+        }
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        input[type="number"] {
+            flex: 1;
+            padding: 8px;
+            font-size: 16px;
+        }
+        button {
+            padding: 8px 16px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #restartBtn {
+            display: none;
+            width: 100%;
+            margin-top: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        .message {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .history {
+            margin-top: 15px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Arva ära number (1-100)</h1>
+    
+    <p>Käik: <span id="turnDisplay">1</span> / 10</p>
+
+    <div class="controls">
+        <input type="number" id="guessInput" min="1" max="100" placeholder="Sisesta number...">
+        <button id="submitBtn">Arva</button>
+    </div>
+
+    <div class="message" id="messageDisplay"></div>
+    <div class="history">Eelmised arvamused: <span id="historyDisplay">puuduvad</span></div>
+
+    <button id="restartBtn">Alusta uut mängu</button>
+
+    <script>
+        // Mängu muutujad
+        let randomNumber;
+        let turnNumber = 1;
+        const maxTurns = 10;
+        let previousGuesses = [];
+
+        // DOM elemendid
+        const guessInput = document.getElementById('guessInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const turnDisplay = document.getElementById('turnDisplay');
+        const messageDisplay = document.getElementById('messageDisplay');
+        const historyDisplay = document.getElementById('historyDisplay');
+        const restartBtn = document.getElementById('restartBtn');
+
+        // Mängu algseadistus
+        function initGame() {
+            randomNumber = Math.floor(Math.random() * 100) + 1;
+            turnNumber = 1;
+            previousGuesses = [];
+            
+            turnDisplay.textContent = turnNumber;
+            messageDisplay.textContent = '';
+            messageDisplay.style.color = 'black';
+            historyDisplay.textContent = 'puuduvad';
+            
+            guessInput.value = '';
+            guessInput.disabled = false;
+            submitBtn.disabled = false;
+            restartBtn.style.display = 'none';
+        }
+
+        // Arvamise loogika
+        function checkGuess() {
+            const userGuess = Number(guessInput.value);
+
+            if (!userGuess || userGuess < 1 || userGuess > 100) {
+                messageDisplay.textContent = 'Palun sisesta number vahemikus 1 kuni 100!';
+                messageDisplay.style.color = 'orange';
+                return;
+            }
+
+            // Salvesta ja kuva arvamus
+            previousGuesses.push(userGuess);
+            historyDisplay.textContent = previousGuesses.join(', ');
+
+            // Kontrolli, kas arvati õigesti
+            if (userGuess === randomNumber) {
+                messageDisplay.textContent = `Palju õnne! Arvasid numbri ${randomNumber} õigesti ära!`;
+                messageDisplay.style.color = 'green';
+                endGame();
+            } else if (turnNumber >= maxTurns) {
+                messageDisplay.textContent = `Mäng läbi! Käigud said otsa. Õige number oli ${randomNumber}.`;
+                messageDisplay.style.color = 'red';
+                endGame();
+            } else {
+                if (userGuess < randomNumber) {
+                    messageDisplay.textContent = 'Vale! Sinu pakkumine on liiga madal.';
+                } else {
+                    messageDisplay.textContent = 'Vale! Sinu pakkumine on liiga kõrge.';
+                }
+                messageDisplay.style.color = 'red';
+                
+                // Suurenda käikude arvu
+                turnNumber++;
+                turnDisplay.textContent = turnNumber;
+                guessInput.value = '';
+                guessInput.focus();
+            }
+        }
+
+        // Mängu lõpetamine
+        function endGame() {
+            guessInput.disabled = true;
+            submitBtn.disabled = true;
+            restartBtn.style.display = 'block';
+        }
+
+        // Sündmuste kuulajad
+        submitBtn.addEventListener('click', checkGuess);
+        restartBtn.addEventListener('click', initGame);
+
+        // Alusta mängu lehe laadimisel
+        initGame();
+    </script>
+
+</body>
+</html>
