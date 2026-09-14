@@ -1,6 +1,6 @@
 // Siim Sander Kool
 // Ülesanne 05
-// 07.09.2026
+// 14.09.2026
 
 let temp = 20;
 
